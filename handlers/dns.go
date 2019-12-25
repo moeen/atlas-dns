@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"github.com/moeen/atlas-dns/resources"
 	"github.com/moeen/atlas-dns/services"
 	"net/http"
@@ -12,16 +11,9 @@ import (
 func DnsHandler(ctx *gin.Context) {
 	var r resources.DnsRequest
 	// Trying to unmarshal the incoming POST request body to DnsRequest struct
+	// It also validates the Json
 	if err := ctx.ShouldBindJSON(&r); err != nil {
-		ctx.JSON(400, resources.ErrorResponse{Message: "bad request body"})
-		return
-	}
-
-	validate := validator.New()
-
-	// Trying to validate the request with rules defined in the DnsRequest struct
-	if err := validate.Struct(r); err != nil {
-		ctx.JSON(400, resources.ErrorResponse{Message: "bad request body"})
+		ctx.JSON(http.StatusBadRequest, resources.ErrorResponse{Message: "bad request body"})
 		return
 	}
 
